@@ -4,6 +4,7 @@
 #include <IR/include/Opcode.h>
 #include <IR/include/Operand.h>
 
+#include <algorithm>
 #include <cassert>
 #include <cstdint>
 #include <iostream>
@@ -41,15 +42,36 @@ public:
   std::list<std::shared_ptr<Inst>> &GetInstList() { return instList; }
   std::list<std::shared_ptr<PhiInst>> &GetPhiList() { return phiList; }
 
-  void SetSucc(std::shared_ptr<BBlock> succ) { successors.insert(succ); }
+  void AddSucc(std::shared_ptr<BBlock> succ) {
+    auto it = std::find(successors.begin(), successors.end(), succ);
+    if (it == successors.end()) {
+      assert(successors.size() <= 2 && "no more than 2 successors");
+      successors.push_back(succ);
+    }
+  }
 
-  void SetPred(std::shared_ptr<BBlock> pred) { predessors.insert(pred); }
+  void AddPred(std::shared_ptr<BBlock> pred) {
+    auto it = std::find(predessors.begin(), predessors.end(), pred);
+    if (it == predessors.end()) {
+      predessors.push_back(pred);
+    }
+  }
 
-  const std::set<std::shared_ptr<BBlock>> &GetSuccessors() const {
+  bool RemoveSucc(std::shared_ptr<BBlock> succ) {
+    auto it = std::find(successors.begin(), successors.end(), succ);
+    return successors.erase(it) != successors.end();
+  }
+
+  bool RemovePred(std::shared_ptr<BBlock> pred) {
+    auto it = std::find(predessors.begin(), predessors.end(), pred);
+    return predessors.erase(it) != predessors.end();
+  }
+
+  const std::list<std::shared_ptr<BBlock>> &GetSuccessors() const {
     return successors;
   }
 
-  const std::set<std::shared_ptr<BBlock>> &GetPredessors() const {
+  const std::list<std::shared_ptr<BBlock>> &GetPredessors() const {
     return predessors;
   }
 
@@ -62,8 +84,8 @@ private:
 
   std::list<std::shared_ptr<Inst>> instList;
   std::list<std::shared_ptr<PhiInst>> phiList;
-  std::set<std::shared_ptr<BBlock>> predessors;
-  std::set<std::shared_ptr<BBlock>> successors;
+  std::list<std::shared_ptr<BBlock>> predessors;
+  std::list<std::shared_ptr<BBlock>> successors;
 };
 
 class Inserter {
