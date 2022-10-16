@@ -5,23 +5,42 @@
 
 #include <IR/include/BasicBlock.h>
 
+using BBlockPtr = std::shared_ptr<BBlock>;
+
 class Graph {
 public:
-  using Iterator = std::list<std::shared_ptr<BBlock>>::iterator;
+  using Iter = std::vector<BBlockPtr>::iterator;
 
-  Iterator BlockBegin() { return blockList.begin(); }
+  Iter BlockBegin() { return blocks.begin(); }
+  Iter BlockEnd() { return blocks.end(); }
+  std::vector<BBlockPtr> &GetBlocks() { return blocks; }
 
-  Iterator BlockEnd() { return blockList.end(); }
+  void PushBlock(BBlockPtr block) { blocks.push_back(block); }
 
-  void PushBlock(std::shared_ptr<BBlock> block) { blockList.push_back(block); }
-
-  void CreateEdge(std::shared_ptr<BBlock> from, std::shared_ptr<BBlock> to) {
+  void CreateEdge(BBlockPtr from, BBlockPtr to) {
+    assert(Contains(from) && Contains(to) && "blocks outside of graph");
     from->SetSucc(to);
     to->SetPred(from);
   }
 
-  std::shared_ptr<BBlock> GetEntryBlock() { return blockList.front(); }
+  BBlockPtr GetEntry() { return blocks.at(0); }
+
+  bool Contains(const BBlockPtr b) const {
+    return std::find(blocks.cbegin(), blocks.cend(), b) != blocks.cend();
+  }
+
+  void DumpDot(std::ostream &os) const {
+    os << "digraph G {" << std::endl;
+    for (const auto &b : blocks) {
+      const std::string &bName = b->GetName();
+      os << bName << std::endl;
+      for (const auto &succ : b->GetSuccessors()) {
+        os << bName << " -> " << succ->GetName() << std::endl;
+      }
+    }
+    os << "}";
+  }
 
 private:
-  std::list<std::shared_ptr<BBlock>> blockList;
+  std::vector<BBlockPtr> blocks;
 };
