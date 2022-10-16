@@ -41,18 +41,25 @@ public:
   std::list<std::shared_ptr<Inst>> &GetInstList() { return instList; }
   std::list<std::shared_ptr<PhiInst>> &GetPhiList() { return phiList; }
 
-  std::shared_ptr<Label> GetLabel() const { return label; }
-
   void SetSucc(std::shared_ptr<BBlock> succ) { successors.insert(succ); }
 
   void SetPred(std::shared_ptr<BBlock> pred) { predessors.insert(pred); }
 
-  const std::string &GetName() const;
+  const std::set<std::shared_ptr<BBlock>> &GetSuccessors() const {
+    return successors;
+  }
+
+  const std::set<std::shared_ptr<BBlock>> &GetPredessors() const {
+    return predessors;
+  }
+
+  const std::string &GetName() const { return name; };
 
   void Dump(std::ostream &os) const;
 
 private:
-  std::shared_ptr<Label> label;
+  std::string name;
+
   std::list<std::shared_ptr<Inst>> instList;
   std::list<std::shared_ptr<PhiInst>> phiList;
   std::set<std::shared_ptr<BBlock>> predessors;

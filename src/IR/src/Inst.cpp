@@ -10,7 +10,7 @@ void Inst::Dump(std::ostream &os) const {
   os << ToString(op);
 
   if (IsLabel()) {
-    os << " " << GetBBlock()->GetLabel()->GetName();
+    os << " " << GetBBlock()->GetName();
   } else {
     std::for_each(sources.begin(), sources.end(), [&os](const auto &src) {
       os << " ";

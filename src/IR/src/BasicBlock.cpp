@@ -1,23 +1,9 @@
 #include <IR/include/BasicBlock.h>
 
-BBlock::BBlock() {
-  // FIXME?
-  auto block_ptr = std::shared_ptr<BBlock>(this);
-  label = std::make_shared<Label>(
-      block_ptr, std::to_string(reinterpret_cast<intptr_t>(this)));
-}
-
-BBlock::BBlock(const std::string &lname) {
-  // FIXME?
-  auto block_ptr = std::shared_ptr<BBlock>(this);
-  label = std::make_shared<Label>(block_ptr, lname);
-}
-
-const std::string &BBlock::GetName() const { return label->GetName(); }
+BBlock::BBlock(const std::string &name) : name(name) {}
 
 void BBlock::Dump(std::ostream &os) const {
-  label->Dump(os);
-  os << ":" << std::endl;
+  os << "%" << name << ":" << std::endl;
 
   for (auto i : instList) {
     os << "  ";
