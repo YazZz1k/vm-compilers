@@ -7,55 +7,49 @@
 #include <memory>
 #include <vector>
 
-class Node;
-using NodePtr = std::shared_ptr<Node>;
+class DomTreeNode;
 
-class Node {
-public:
-  explicit Node(BBlockPtr block) : block(block) {}
+class DomTreeNode : NodeTraits<DomTreeNode> {
+ public:
+  DomTreeNode(BBlockPtr bblock) : bblock(bblock) {}
 
-  void AddChild(NodePtr childNode) {
-    childNode->parent = std::make_shared<Node>(this->block);
-    childs.push_back(childNode);
+  using NodePtr = std::shared_ptr<DomTreeNode>;
+
+  void AddSucc(const NodePtr succ) override {
+    childs.push_back(succ);
   }
 
-  void AddChild(BBlockPtr childBlock) {
-    NodePtr newChild = std::make_shared<Node>(childBlock);
-    newChild->parent = std::make_shared<Node>(this->block);
-    childs.push_back(newChild);
+  void AddPred(const NodePtr pred) override {
+    // no predessors -- method is empty
   }
 
-  const std::vector<NodePtr> &GetChilds() const { return childs; }
-
-  bool Consist(const BBlockPtr desired) {
-    if (desired == block) {
-      return true;
-    } else {
-      for (const auto &ch : childs) {
-        if (ch->Consist(desired)) {
-          return true;
-        }
-      }
-    }
-    return false;
+  void RemoveSucc() override {
+    assert(false && "unimplemented");
   }
 
-  void DumpDot(std::ostream &os) {
-    os << block->GetName() << std::endl;
-    for (auto &ch : childs) {
-      os << block->GetName() << " -> " << ch->block->GetName() << std::endl;
-      ch->DumpDot(os);
-    }
+  void RemovePred() override {
+    assert(false && "unimplemented");
   }
 
-private:
-  BBlockPtr block;
-  NodePtr parent;
+  std::vector<NodePtr> GetSuccessors() const override {
+    return childs;
+  }
+  std::vector<NodePtr> GetPredessors() const override {
+    // no predessors -- return empty vector
+    return std::vector<NodePtr>();
+  }
+
+  std::string GetName() const override {
+    return bblock->GetName();
+  }
+
+ private:
+  BBlockPtr bblock;
   std::vector<NodePtr> childs;
 };
 
-class DominatorTree {
-public:
+class DominatorTree : public GraphTraits<DomTreeNode> {
+ public:
   DominatorTree(const Graph &graph) { InitFrom(graph); }
 
   // return true if 'dom' dominate 'block'
@@ -63,14 +57,12 @@ public:
     assert(block2node.count(dom) > 0 && block2node.count(block) > 0 &&
            "dominator tree doesn't consist required blocks");
     NodePtr domNode = block2node.at(dom);
-    // find in subtree
-    return domNode->Consist(block);
-  }
+    NodePtr domBlock = block2node.at(block);
 
-  void DumpDot(std::ostream &os) {
-    os << "digraph G {" << std::endl;
-    root->DumpDot(os);
-    os << "}" << std::endl;
+    // find in subtree
+    std::set<NodePtr> s;
+    auto dfs = GetDfs(domNode, s);
+    return find(dfs.begin(), dfs.end(), domBlock) != dfs.end();
   }
 
 private:
@@ -98,7 +90,7 @@ private:
       return domSet.at(idx).count(node) > 0;
     };
 
-    NodePtr newBranch = std::make_shared<Node>(block);
+    NodePtr newBranch = std::make_shared<DomTreeNode>(block);
     block2node.insert({block, newBranch});
 
     size_t idx = block2idx.at(block);
@@ -114,11 +106,11 @@ private:
           }
         }
         if (notDominated) {
-          newBranch->AddChild(CreateBranch(child, domSet, block2idx));
+          newBranch->AddSucc(CreateBranch(child, domSet, block2idx));
         }
       }
     }
-
+    PushBlock(newBranch);
     return newBranch;
   }
 
