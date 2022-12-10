@@ -58,9 +58,42 @@ public:
     return parent ? std::vector<NodePtr>{parent} : std::vector<NodePtr>();
   }
 
-  std::string GetName() const override { assert(false && "unimplemented"); }
+  std::string GetName() const override {
+    if (isRoot) {
+      return "Root";
+    }
+    return head->GetName();
+  }
+
   void DumpDot(std::ostream &os) const override {
-    assert(false && "unimplemented");
+    os << GetName() << "[label = \"";
+    if (isRoot) {
+      os << "Root node"
+         << "\n";
+      if (!srcs.empty()) {
+        os << "Sources: ";
+        for (const auto &src : srcs) {
+          os << src->GetName() << " ";
+        }
+      }
+    } else {
+      assert(head && !backEdges.empty());
+      os << "Head: " << head->GetName() << "\n";
+      os << "Back edges sources: ";
+      for (const auto beSrc : backEdges) {
+        os << beSrc->GetName() << " ";
+      }
+      os << "\n";
+      if (!srcs.empty()) {
+        os << "Sources: ";
+        for (const auto src : srcs) {
+          os << src->GetName() << " ";
+        }
+      }
+      os << "\n";
+    }
+
+    os << "\"]";
   }
 
 private:
