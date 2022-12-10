@@ -21,6 +21,9 @@ class InstOperand;
 class ImmOperand;
 class LabelOperand;
 
+class BBlock;
+using BBlockPtr = std::shared_ptr<BBlock>;
+
 class BBlock {
 public:
   BBlock();

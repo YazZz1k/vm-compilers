@@ -30,9 +30,7 @@ class GraphTraits {
   Iter BlockEnd() {
     return nodes.end();
   }
-  std::vector<NodePtr> &GetBlocks() {
-    return nodes;
-  }
+  const std::vector<NodePtr> &GetBlocks() const { return nodes; }
 
   void PushBlock(NodePtr block) {
     nodes.push_back(block);

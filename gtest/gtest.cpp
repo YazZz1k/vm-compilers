@@ -1,11 +1,14 @@
 #include "gtest/gtest.h"
 
-#include <passes/DominatorTree.h>
 #include <IR/include/BasicBlock.h>
 #include <IR/include/Graph.h>
+#include <passes/DominatorTree.h>
+#include <passes/LoopAnalysis.h>
 
 #include <fstream>
 #include <iostream>
+
+#define DUMP_DOT
 
 TEST(Required, first) {
   Graph graph;
@@ -225,6 +228,8 @@ TEST(Required, third) {
 
   ASSERT_FALSE(domTree.IsDominate(D, C));
   ASSERT_FALSE(domTree.IsDominate(E, D));
+
+  LoopTree loopTree(graph);
 }
 
 int main(int argc, char **argv) {

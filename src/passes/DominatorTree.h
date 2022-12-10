@@ -53,7 +53,7 @@ class DominatorTree : public GraphTraits<DomTreeNode> {
   DominatorTree(const Graph &graph) { InitFrom(graph); }
 
   // return true if 'dom' dominate 'block'
-  bool IsDominate(const BBlockPtr dom, const BBlockPtr block) {
+  bool IsDominate(const BBlockPtr dom, const BBlockPtr block) const {
     assert(block2node.count(dom) > 0 && block2node.count(block) > 0 &&
            "dominator tree doesn't consist required blocks");
     NodePtr domNode = block2node.at(dom);
