@@ -79,6 +79,7 @@ public:
   }
 
   const std::string &GetName() const { return name; };
+  void DumpDot(std::ostream &os) const { os << name; };
 
   void Dump(std::ostream &os) const;
 

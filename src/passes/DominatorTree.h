@@ -43,7 +43,9 @@ class DomTreeNode : NodeTraits<DomTreeNode> {
     return bblock->GetName();
   }
 
- private:
+  void DumpDot(std::ostream &os) const override { os << bblock->GetName(); }
+
+private:
   BBlockPtr bblock;
   std::vector<NodePtr> childs;
 };

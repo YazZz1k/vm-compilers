@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ostream>
 #include <stack>
 
 template <class Node>
@@ -16,6 +17,7 @@ class NodeTraits {
 
   // for DumpDot
   virtual std::string GetName() const = 0;
+  virtual void DumpDot(std::ostream &) const = 0;
 };
 
 template <class Node>
@@ -68,10 +70,12 @@ class GraphTraits {
   void DumpDot(std::ostream &os) const {
     os << "digraph G {" << std::endl;
     for (const auto &b : nodes) {
-      const std::string &bName = b->GetName();
-      os << bName << std::endl;
+      b->DumpDot(os);
+      os << std::endl;
+    }
+    for (const auto &b : nodes) {
       for (const auto &succ : b->GetSuccessors()) {
-        os << bName << " -> " << succ->GetName() << std::endl;
+        os << b->GetName() << " -> " << succ->GetName() << std::endl;
       }
     }
     os << "}";

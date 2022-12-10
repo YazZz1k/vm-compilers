@@ -59,6 +59,9 @@ public:
   }
 
   std::string GetName() const override { assert(false && "unimplemented"); }
+  void DumpDot(std::ostream &os) const override {
+    assert(false && "unimplemented");
+  }
 
 private:
   BBlockPtr bblock;
