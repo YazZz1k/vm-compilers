@@ -25,5 +25,6 @@ add_executable(gtest
       src/IR/src/Operand.cpp
       src/IR/src/BasicBlock.cpp
       src/IR/src/Inst.cpp
+      src/passes/src/LoopAnalysis.cpp
 )
 target_link_libraries(gtest ${GTEST_LIBRARIES} pthread)

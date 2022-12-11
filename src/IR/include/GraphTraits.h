@@ -10,8 +10,8 @@ class NodeTraits {
 
   virtual void AddSucc(const NodePtr succ) = 0;
   virtual void AddPred(const NodePtr pred) = 0;
-  virtual void RemoveSucc() = 0;
-  virtual void RemovePred() = 0;
+  virtual void RemoveSucc(const NodePtr succ) = 0;
+  virtual void RemovePred(const NodePtr pred) = 0;
   virtual std::vector<NodePtr> GetSuccessors() const = 0;
   virtual std::vector<NodePtr> GetPredessors() const = 0;
 

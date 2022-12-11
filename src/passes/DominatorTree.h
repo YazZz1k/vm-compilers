@@ -23,11 +23,11 @@ class DomTreeNode : NodeTraits<DomTreeNode> {
     // no predessors -- method is empty
   }
 
-  void RemoveSucc() override {
+  void RemoveSucc(const NodePtr succ) override {
     assert(false && "unimplemented");
   }
 
-  void RemovePred() override {
+  void RemovePred(const NodePtr pred) override {
     assert(false && "unimplemented");
   }
 
