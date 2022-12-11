@@ -21,6 +21,7 @@ add_executable(gtest
       gtest/gtest.cpp
       gtest/traversals_tree.cpp
       gtest/dominator_tree_test.cpp
+      gtest/loop_analyse_test.cpp
       src/IR/src/Operand.cpp
       src/IR/src/BasicBlock.cpp
       src/IR/src/Inst.cpp

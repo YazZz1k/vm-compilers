@@ -41,6 +41,10 @@ public:
 
   void AddSource(const BBlockPtr src) { srcs.push_back(src); }
 
+  const LoopTreeNodePtr GetOuterLoop() const { return parent; }
+
+  const std::vector<LoopTreeNodePtr> &GetInnerLoops() const { return childs; }
+
 public:
   // node traits
   using NodePtr = LoopTreeNodePtr;
@@ -112,6 +116,13 @@ private:
 class LoopTree : public GraphTraits<LoopTreeNode> {
 public:
   LoopTree(const Graph &graph) : graph(graph), domTree(graph) { Init(); }
+
+  const LoopTreeNodePtr GetRoot() const { return root; }
+
+  const LoopTreeNodePtr GetLoopNode(const BBlockPtr bb) const {
+    assert(block2node.count(bb) != 0 && "attempt to get non-existend loop");
+    return block2node.at(bb);
+  }
 
 private:
   LoopTreeNodePtr root;
@@ -215,6 +226,7 @@ private:
     for (const auto bb : graph.GetBlocks()) {
       if (GetMarker(bb) != GREEN) {
         root->AddSource(bb);
+        block2node.insert({bb, root});
       }
     }
   }
@@ -235,11 +247,6 @@ private:
 
     const auto loopPtr = block2node.at(bb);
     return loopPtr->GetHead() == bb;
-  }
-
-  const LoopTreeNodePtr GetLoopNode(const BBlockPtr bb) const {
-    assert(block2node.count(bb) != 0 && "attempt to get non-existend loop");
-    return block2node.at(bb);
   }
 
   void Init() {
