@@ -2,6 +2,7 @@
 
 #include <passes/LoopAnalysis.h>
 
+// 1st graph from 2nd slide of 3rd-assigment.pptx
 TEST(LoopAnalysis, first) {
   Graph graph;
   BBlockPtr A = std::make_shared<BBlock>("A");
@@ -33,6 +34,7 @@ TEST(LoopAnalysis, first) {
   ASSERT_EQ(root->GetInnerLoops().empty(), true);
   ASSERT_EQ(root->GetOuterLoop() == nullptr, true);
 
+  // no loops. Expected that all blocks inside the root loop
   ASSERT_EQ(loopTree.GetLoopNode(A) == root, true);
   ASSERT_EQ(loopTree.GetLoopNode(B) == root, true);
   ASSERT_EQ(loopTree.GetLoopNode(C) == root, true);
@@ -42,6 +44,7 @@ TEST(LoopAnalysis, first) {
   ASSERT_EQ(loopTree.GetLoopNode(G) == root, true);
 }
 
+// 2nd graph from 2nd slide of 3rd-assigment.pptx
 TEST(LoopAnalysis, second) {
   Graph graph;
   BBlockPtr A = std::make_shared<BBlock>("A");
@@ -89,6 +92,20 @@ TEST(LoopAnalysis, second) {
   const auto loop0 = loopTree.GetLoopNode(B);
   const auto loop1 = loopTree.GetLoopNode(E);
   const auto loop2 = loopTree.GetLoopNode(G);
+
+  /*
+   * Root{sources: A K L}
+   * loop1{Head: E
+   *       Back edge: F}
+   * loop2{Head: G
+   *       Back edge: H}
+   * loop0{Head: B
+   *       Back edge: M
+   *       Sources: I C}
+   * Root -> loop0
+   *         /    \
+   *       loop1  loop2
+   */
 
   // root: sources: A, K, L
   ASSERT_EQ(root->GetOuterLoop() == nullptr, true);
@@ -153,10 +170,24 @@ TEST(LoopAnalysis, third) {
   graph.CreateEdge(E, F);
 
   LoopTree loopTree(graph);
-
   const auto root = loopTree.GetRoot();
   const auto loop0 = loopTree.GetLoopNode(C);
   const auto loop1 = loopTree.GetLoopNode(B);
+
+  /*
+   * Root{sources: A F I}
+   * loop0{Irreducible loop
+   *       Head: C
+   *       Back edge: E}
+   * loop1{Head: B
+   *       Back edge: H
+   *       Sources: G}
+   *
+   *    Root
+   *   /    \
+   * loop0  loop1
+   *
+   */
 
   // root. sources: A F I
   ASSERT_EQ(root->GetOuterLoop() == nullptr, true);
